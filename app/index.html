@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <title>New Employee Search</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="styles/style.css">
+  <link rel="stylesheet" type="text/css" href="https://static.freshdev.io/fdk/2.0/assets/freshdesk.css">
+
+
+  <script src="{{{appclient}}}"></script>
+  <script src="scripts/app.js"></script>
+</head>
+
+<body>
+  <main>
+    <div class="fw-widget-wrapper">
+      <h2>Get new employee requests in time range</h2>
+      <form id="getEployeeList">
+        <div class="column">
+          <label class="label">From:</label>
+          <input type="date" id="start" value="today">
+          <label class="label">To:</label>
+          <input type="date" id="end" value="today">
+          <input type="button" id="submitButton" onclick="getEmployeeList()" value="Submit">
+        </div>
+      </form>
+
+
+      <div id="employeeTable">
+        <h3>
+          Press submit to get list
+        </h3>
+      </div>
+
+    </div>
+    <div id="credit"> icons by <a target="_blank" href="https://icons8.com">Icons8</a></div>
+    <div id="contact"><a target="_blank" href="">Leave feedback</a></div>
+  </main>
+</body>
+
+
+</html>

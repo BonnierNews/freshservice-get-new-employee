@@ -1,0 +1,74 @@
+html {
+    width: 100%;
+    color: rgb(18, 52, 77);
+}
+
+main {
+    padding: 5px;
+}
+
+#employeeTable {
+    padding: 10px;
+    width: 100%;
+    font-size: small;
+    display: table;
+    border-collapse: collapse;
+    border-radius: 4px 4px 0 0;
+    border-spacing: 0;
+
+}
+
+#tableHeader {
+    font-weight: bold;
+    border-width: 0px;
+    border-bottom: 1px solid #d3dbda;
+    border-radius: 4px 0 0 4px;
+}
+
+#start,
+#end,
+.label,
+#submitButton {
+    font-size: medium;
+    display: inline-flexbox;
+    width: auto;
+}
+
+.cell {
+    display: table-cell;
+    text-align: left;
+    border-width: 0px;
+    border-bottom: 1px solid #d3dbda;
+    box-sizing: border-box;
+    border-radius: 4px 0 0 4px;
+    font-size: 14px;
+    line-height: 25px;
+    vertical-align: middle !important;
+}
+
+.column {
+    width: 100%;
+}
+
+.row {
+    display: table-row;
+}
+
+.isFirstColumn:hover {
+    border-radius: 4px 0 0 4px;
+}
+
+.linkRow:hover .cell {
+    background-color: #F2F7FC;
+}
+
+#credit {
+    position: absolute;
+    bottom: 0;
+}
+
+#contact {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}

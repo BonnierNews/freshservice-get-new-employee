@@ -1,0 +1,15 @@
+{
+    "domain": {
+        "display_name": "Freshservice Domain",
+        "description": "Please enter your Freshservice domain",
+        "type": "text",
+        "required": true
+    },
+    "api_key": {
+        "display_name": "ApiKey",
+        "description": "Please enter API key for service account",
+        "type": "text",
+        "required": true,
+        "secure": true
+    }
+}

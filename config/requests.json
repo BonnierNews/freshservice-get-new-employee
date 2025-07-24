@@ -1,0 +1,17 @@
+{
+    "requestNewEmployeeList": {
+        "schema": {
+            "method": "GET",
+            "host": "<%= iparam.domain %>.freshservice.com",
+            "path": "/api/v2/tickets/filter",
+            "query": {
+                "query": "\"tag:'New employee' AND (<%= context.groups %>) AND due_by:<'<%= context.toDate %>' AND due_by:>'<%= context.fromDate %>'\"",
+                "page": "<%= context.page %>"
+            },
+            "headers": {
+                "Authorization": "Basic <%= encode(iparam.api_key) %>",
+                "Content-Type": "application/json"
+            }            
+        }
+    }
+}
