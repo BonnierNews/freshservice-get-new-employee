@@ -94,14 +94,9 @@ async function getEmployeeList() {
 			document.getElementById('employeeTable').innerHTML = '<h3>No tickets found in selected timerange! 🎉</h3>';
 		}
 		//Show results
-		else {
-			for (const ticket in tickets) {
-				const ticketObj = tickets[ticket];
-				const words = ticketObj.subject.split('|');
-				const title = words[1].split(' - ');
-				addRow(ticketObj.id, words[0], title[0], title[1], words[2], ticketObj.status);
-			};
-		}
+		else tickets.forEach(ticket => {
+			addRow(new Ticket(ticket))
+		});
 
 		//Get list of upcoming tickets that are to be sent
 	} catch (error) {
@@ -124,6 +119,20 @@ async function getTickets(groups, page = 1) {
 	});
 }
 
+class Ticket {
+	constructor(ticket) {
+		const words = ticket.subject.split('|');
+		const title = words[1].split(' - ');
+		this.ticketId = ticket.id;
+		this.company = words[0];
+		this.pickupLocation = title[0];
+		this.date = title[1];
+		this.typeAndName = words[2];
+		this.statusText = statusList[ticket.status].text;
+		this.statusColour = statusList[ticket.status].colour;
+	};
+}
+
 const statusList = [
 	{},
 	{},
@@ -134,26 +143,26 @@ const statusList = [
 	{ text: 'Hold', 	colour: '#f1fa8c55' }
 ];
 
-function addRow(ticketId, company, pickupLocation, date, typeAndName, statusId) {
+function addRow(ticket) {
 	document.getElementById('employeeTable').innerHTML += `
-		<a class="row linkRow" target="_blank" href="https://bonniernews.freshservice.com/a/tickets/${ticketId}">
+		<a class="row linkRow" target="_blank" href="https://bonniernews.freshservice.com/a/tickets/${ticket.ticketId}">
 			<div class="cell isFirstColumn">
-				#SR-${ticketId}
+				#SR-${ticket.ticketId}
 			</div>
 			<div class="cell">
-				${company}
+				${ticket.company}
 			</div>
 			<div class="cell">
-				${pickupLocation}
+				${ticket.pickupLocation}
 			</div>
 			<div class="cell">
-				${date}
+				${ticket.date}
 			</div>
 			<div class="cell">
-				${typeAndName}
+				${ticket.typeAndName}
 			</div>
-			<div id="statusCell" class="cell" style="background-color:${statusList[statusId].colour}">
-				${statusList[statusId].text}
+			<div id="statusCell" class="cell" style="background-color:${ticket.statusColour}">
+				${ticket.statusText}
 			</div>
 		</a>`;
 }
