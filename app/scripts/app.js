@@ -95,7 +95,7 @@ async function getEmployeeList() {
 		}
 		//Show results
 		else tickets.forEach(ticket => {
-			addRow(new Ticket(ticket))
+			new Ticket(ticket).setRow();
 		});
 
 		//Get list of upcoming tickets that are to be sent
@@ -130,7 +130,30 @@ class Ticket {
 		this.typeAndName = words[2];
 		this.statusText = statusList[ticket.status].text;
 		this.statusColour = statusList[ticket.status].colour;
-	};
+	}
+	setRow(){
+		document.getElementById('employeeTable').innerHTML += `
+		<a class="row linkRow" target="_blank" href="https://bonniernews.freshservice.com/a/tickets/${this.ticketId}">
+			<div class="cell isFirstColumn">
+				#SR-${this.ticketId}
+			</div>
+			<div class="cell">
+				${this.company}
+			</div>
+			<div class="cell">
+				${this.pickupLocation}
+			</div>
+			<div class="cell">
+				${this.date}
+			</div>
+			<div class="cell">
+				${this.typeAndName}
+			</div>
+			<div id="statusCell" class="cell" style="background-color:${this.statusColour}">
+				${this.statusText}
+			</div>
+		</a>`;
+	}
 }
 
 const statusList = [
@@ -142,27 +165,3 @@ const statusList = [
 	{ text: 'Resolved', colour: '#50fa7b55' },
 	{ text: 'Hold', 	colour: '#f1fa8c55' }
 ];
-
-function addRow(ticket) {
-	document.getElementById('employeeTable').innerHTML += `
-		<a class="row linkRow" target="_blank" href="https://bonniernews.freshservice.com/a/tickets/${ticket.ticketId}">
-			<div class="cell isFirstColumn">
-				#SR-${ticket.ticketId}
-			</div>
-			<div class="cell">
-				${ticket.company}
-			</div>
-			<div class="cell">
-				${ticket.pickupLocation}
-			</div>
-			<div class="cell">
-				${ticket.date}
-			</div>
-			<div class="cell">
-				${ticket.typeAndName}
-			</div>
-			<div id="statusCell" class="cell" style="background-color:${ticket.statusColour}">
-				${ticket.statusText}
-			</div>
-		</a>`;
-}
