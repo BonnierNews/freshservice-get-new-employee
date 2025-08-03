@@ -14,26 +14,44 @@ app.initialized().then(
 function onAppActivated(_client) {
 	client = _client;
 
-	//Prepare coming Monday as a start
-	const fromDate = new Date();
-	fromDate.setDate(fromDate.getDate() + (((1 + 7 - fromDate.getDay()) % 7) || 7));
-	const fromDateString = fromDate.toISOString().slice(0, 10);
+	const fromDate = new CustomDate();
+	fromDate.setComing(Week.Monday);
 
-	//Prepare coming Sunday as end
-	const toDate = new Date();
-	toDate.setDate(fromDate.getDate() + 6);
-	const toDateString = toDate.toISOString().slice(0, 10);
+	const toDate = new CustomDate(fromDate.date);
+	toDate.addDays(6);
 
-	//Set date for start
-	const startDate = document.querySelector('input[id="start"]');
-	startDate.value = fromDateString;
+	fromDate.updateSelector("start");
+	toDate.updateSelector("end");
 
-	//Set date for end
-	const endDate = document.querySelector('input[id="end"]');
-	endDate.value = toDateString;
-
-	//getEmployeeList(client);
 }
+
+class CustomDate {
+	constructor(date = new Date()) {
+		this.date = structuredClone(date);
+	}
+	setComing(weekday) {
+		this.date.setDate(this.date.getDate() + (((weekday + 7 - this.date.getDay()) % 7 || 7)));
+	}
+	addDays(days) {
+		this.date.setDate(this.date.getDate() + days);
+	}
+	getFormatedDate() {
+		return this.date.toISOString().slice(0, 10);
+	}
+	updateSelector(selector){
+		document.querySelector(`input[id="${selector}"]`).value = this.getFormatedDate();
+	}
+}
+
+const Week = {
+	Monday: 1,
+	Tuesday: 2,
+	Wednesday: 3,
+	Thursday: 4,
+	Friday: 5,
+	Saturday: 6,
+	Sunday: 0
+};
 
 function sortByDate(a, b) {
 	if (a.due_by > b.due_by) return 1;
