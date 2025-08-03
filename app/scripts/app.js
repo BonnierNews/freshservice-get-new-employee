@@ -25,40 +25,6 @@ function onAppActivated(_client) {
 
 }
 
-class CustomDate {
-	constructor(date = new Date()) {
-		this.date = structuredClone(date);
-	}
-	setComing(weekday) {
-		this.date.setDate(this.date.getDate() + (((weekday + 7 - this.date.getDay()) % 7 || 7)));
-	}
-	addDays(days) {
-		this.date.setDate(this.date.getDate() + days);
-	}
-	getFormatedDate() {
-		return this.date.toISOString().slice(0, 10);
-	}
-	updateSelector(selector){
-		document.querySelector(`input[id="${selector}"]`).value = this.getFormatedDate();
-	}
-}
-
-const Week = {
-	Monday: 1,
-	Tuesday: 2,
-	Wednesday: 3,
-	Thursday: 4,
-	Friday: 5,
-	Saturday: 6,
-	Sunday: 0
-};
-
-function sortByDate(a, b) {
-	if (a.due_by > b.due_by) return 1;
-	else if (b.due_by > a.due_by) return -1;
-	else return 0;
-}
-
 async function getEmployeeList() {
 	try {
 		//Create table holder
@@ -95,6 +61,43 @@ async function getEmployeeList() {
 	} catch (error) {
 		console.log(error);
 	}
+}
+
+class CustomDate {
+	constructor(date = new Date()) {
+		this.date = structuredClone(date);
+	}
+	setComing(weekday) {
+		this.date.setDate(this.date.getDate() + (((weekday + 7 - this.date.getDay()) % 7 || 7)));
+	}
+	addDays(days) {
+		this.date.setDate(this.date.getDate() + days);
+	}
+	getFormatedDate() {
+		return this.date.toISOString().slice(0, 10);
+	}
+	updateSelector(selector){
+		document.querySelector(`input[id="${selector}"]`).value = this.getFormatedDate();
+	}
+	fetchSelector(selector){
+		this.date = new Date(document.getElementById(selector).value);
+	}
+}
+
+const Week = {
+	Monday: 1,
+	Tuesday: 2,
+	Wednesday: 3,
+	Thursday: 4,
+	Friday: 5,
+	Saturday: 6,
+	Sunday: 0
+};
+
+function sortByDate(a, b) {
+	if (a.due_by > b.due_by) return 1;
+	else if (b.due_by > a.due_by) return -1;
+	else return 0;
 }
 
 function handleErr(err = 'None') {
