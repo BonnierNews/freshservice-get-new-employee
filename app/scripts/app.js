@@ -74,29 +74,10 @@ async function getEmployeeList() {
 		//Format for search query
 		const groupsString = "group_id:" + userGroups.join(" OR group_id:");
 
-		//Get tickets
-		const data = await getTickets(groupsString);
-		const parsedResponse = JSON.parse(data.response);
-		
-		let tickets = parsedResponse.tickets;
-		const ticketsCount = parsedResponse.total;
 
-		//Sort tickets by date
-		tickets = tickets.sort(sortByDate);
-
-		//Handle pagination
-		if (ticketsCount > tickets.length) {
-			document.getElementById('employeeTable').innerHTML = '<h3>Too many tickets in timespan, please narrow down your search.</h3>';
-			//get next page either by making a next page button or getting everything (bad idea)
-		}
-		//Handle empty response
-		else if (tickets.length === 0) {
-			document.getElementById('employeeTable').innerHTML = '<h3>No tickets found in selected timerange! 🎉</h3>';
-		}
-		//Show results
-		else tickets.forEach(ticket => {
-			new Ticket(ticket).setRow();
-		});
+		const tickets = new Tickets();
+		await tickets.getTickets(groupsString);
+		tickets.viewTickets();
 
 		//Get list of upcoming tickets that are to be sent
 	} catch (error) {
@@ -108,15 +89,10 @@ function handleErr(err = 'None') {
 	console.error(`Error occured. Details:`, err);
 }
 
-async function getTickets(groups, page = 1) {
-	return await client.request.invokeTemplate('requestNewEmployeeList', {
-		context: {
-			toDate: document.getElementById("end").value,
-			fromDate: document.getElementById("start").value,
-			groups: groups,
-			page: page
-		}
-	});
+class Agent {
+	constructor(parameters) {
+		
+	}
 }
 
 class Ticket {
@@ -131,7 +107,7 @@ class Ticket {
 		this.statusText = statusList[ticket.status].text;
 		this.statusColour = statusList[ticket.status].colour;
 	}
-	setRow(){
+	setRow() {
 		document.getElementById('employeeTable').innerHTML += `
 		<a class="row linkRow" target="_blank" href="https://bonniernews.freshservice.com/a/tickets/${this.ticketId}">
 			<div class="cell isFirstColumn">
@@ -153,6 +129,47 @@ class Ticket {
 				${this.statusText}
 			</div>
 		</a>`;
+	}
+}
+
+class Tickets {
+	constructor() {
+		this.tickets = [];
+		this.totalTickets = 0;
+	}
+	async getTickets(groups, page = 1) {
+		const data = await client.request.invokeTemplate('requestNewEmployeeList', {
+			context: {
+				toDate: document.getElementById("end").value,
+				fromDate: document.getElementById("start").value,
+				groups: groups,
+				page: page
+			}
+		});
+		const parsedResponse = JSON.parse(data.response);
+
+		const tickets = parsedResponse.tickets;
+		this.totalTickets = parsedResponse.total;
+
+		tickets.forEach(ticket => {
+			this.tickets.push(new Ticket(ticket));
+		});
+
+		this.tickets.sort(sortByDate)
+	}
+	viewTickets() {
+		//Handle pagination
+		if (this.totalTickets > this.tickets.length) {
+			document.getElementById('employeeTable').innerHTML = '<h3>Too many tickets in timespan, please narrow down your search.</h3>';
+			//get next page either by making a next page button or getting everything (bad idea)
+		}
+		//Handle empty response
+		else if (this.tickets.length === 0) {
+			document.getElementById('employeeTable').innerHTML = '<h3>No tickets found in selected timerange! 🎉</h3>';
+		}
+		else this.tickets.forEach(ticket => {
+			ticket.setRow();
+		});
 	}
 }
 
