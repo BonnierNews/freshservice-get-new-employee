@@ -54,10 +54,10 @@ async function getEmployeeList() {
 		await agent.getAgent();
 
 		const tickets = new Tickets();
-		await tickets.getTickets(agent.getGroups());
+		await tickets.getTickets(agent);
+		await tickets.getTickets(agent, true)
 		tickets.viewTickets();
 
-		//Get list of upcoming tickets that are to be sent
 	} catch (error) {
 		console.log(error);
 	}
@@ -108,6 +108,7 @@ class Agent {
 	constructor() {
 		this.name = "";
 		this.address = "";
+		this.shortAddress = "";
 		this.groups = [];
 	}
 	async getAgent() {
@@ -115,6 +116,7 @@ class Agent {
 		this.name = data.user.name;
 		this.address = data.user.location_name;
 		this.groups = data.group_ids;
+		this.shortAddress = this.address.split(',')[1];
 	}
 	getGroups() {
 		return "group_id:" + this.groups.join(" OR group_id:");
@@ -132,6 +134,7 @@ class Ticket {
 		this.typeAndName = words[2];
 		this.statusText = statusList[ticket.status].text;
 		this.statusColour = statusList[ticket.status].colour;
+		this.due_by = ticket.due_by;
 	}
 	setRow() {
 		document.getElementById('employeeTable').innerHTML += `
@@ -163,25 +166,38 @@ class Tickets {
 		this.tickets = [];
 		this.totalTickets = 0;
 	}
-	async getTickets(groups, page = 1) {
+	async getTickets(agent, future = false, page = 1) {
+		const toDate = new CustomDate();
+		toDate.fetchSelector("end");
+		toDate.addDays(future ? 7 : 0);
+		const fromDate = new CustomDate();
+		fromDate.fetchSelector("start");
+		fromDate.addDays(future ? 7 : 0);
+
 		const data = await client.request.invokeTemplate('requestNewEmployeeList', {
 			context: {
-				toDate: document.getElementById("end").value,
-				fromDate: document.getElementById("start").value,
-				groups: groups,
+				toDate: toDate.getFormatedDate(),
+				fromDate: fromDate.getFormatedDate(),
+				groups: agent.getGroups(),
 				page: page
 			}
 		});
 		const parsedResponse = JSON.parse(data.response);
 
 		const tickets = parsedResponse.tickets;
-		this.totalTickets = parsedResponse.total;
+		this.totalTickets += parsedResponse.total;
 
 		tickets.forEach(ticket => {
-			this.tickets.push(new Ticket(ticket));
+			const tempTicket = new Ticket(ticket);
+			if (!future) {
+				this.tickets.push(tempTicket);
+			}
+			else if (future && !tempTicket.pickupLocation.includes(agent.shortAddress) && !this.tickets.find((ticket) => ticket.ticketId === tempTicket.ticketId)) {
+				this.tickets.push(tempTicket);
+			}
+			else this.totalTickets--;
 		});
-
-		this.tickets.sort(sortByDate)
+		this.tickets.sort(sortByDate);
 	}
 	viewTickets() {
 		//Handle pagination
