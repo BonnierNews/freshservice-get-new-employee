@@ -13,9 +13,7 @@ app.initialized().then(
 
 function onAppActivated(_client) {
 	client = _client;
-	client.events.on('app.activated', function log() {
-		//return console.log(`full page location:  app is activated 🥁`);
-	});
+
 	//Prepare coming Monday as a start
 	const fromDate = new Date();
 	fromDate.setDate(fromDate.getDate() + (((1 + 7 - fromDate.getDay()) % 7) || 7));
@@ -68,15 +66,11 @@ async function getEmployeeList() {
 			</div>
 		</div>`;
 
-		//Read group memberships from logged in user
-		const userGroups = (await client.data.get("loggedInUser")).loggedInUser.group_ids;
-		console.log((await client.data.get("loggedInUser")).loggedInUser);
-		//Format for search query
-		const groupsString = "group_id:" + userGroups.join(" OR group_id:");
-
+		const agent = new Agent();
+		await agent.getAgent();
 
 		const tickets = new Tickets();
-		await tickets.getTickets(groupsString);
+		await tickets.getTickets(agent.getGroups());
 		tickets.viewTickets();
 
 		//Get list of upcoming tickets that are to be sent
@@ -90,8 +84,19 @@ function handleErr(err = 'None') {
 }
 
 class Agent {
-	constructor(parameters) {
-		
+	constructor() {
+		this.name = "";
+		this.address = "";
+		this.groups = [];
+	}
+	async getAgent() {
+		const data = (await client.data.get("loggedInUser")).loggedInUser;
+		this.name = data.user.name;
+		this.address = data.user.location_name;
+		this.groups = data.group_ids;
+	}
+	getGroups() {
+		return "group_id:" + this.groups.join(" OR group_id:");
 	}
 }
 
