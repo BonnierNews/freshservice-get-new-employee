@@ -132,18 +132,17 @@ class Ticket {
 			this.pickupLocation = words[1];
 			this.date = words[2];
 			this.typeAndName = words[3];
-			this.company = this.company.replace("Onboarding: ","");
+			this.company = this.company.replace("Onboarding: ", "");
 		} else { //Old format
-			this.company = this.company.replace("Employee Management ","");
-			this.company = this.company.replace(" - Onboarding","");
-			this.company = this.company.replace(" Onboarding","");
+			this.company = this.company.replace("Employee Management ", "");
+			this.company = this.company.replace(" - Onboarding", "");
+			this.company = this.company.replace(" Onboarding", "");
 			
 		const title = words[1].split(' - ');
-			if (title.length == 1) {
+			if (title.length === 1) {
 				this.date = title[0];
 				this.pickupLocation = "okänt";
-			}
-			else {
+			} else {
 				this.pickupLocation = title[0];
 				this.date = title[1];
 			}
