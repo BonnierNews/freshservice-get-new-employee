@@ -125,13 +125,34 @@ class Agent {
 
 class Ticket {
 	constructor(ticket) {
+		//Update split logic
 		const words = ticket.subject.split('|');
+		this.company = words[0]
+		if (words.length === 4) { //The new format
+			this.pickupLocation = words[1];
+			this.date = words[2];
+			this.typeAndName = words[3];
+			this.company = this.company.replace("Onboarding: ","");
+		} else { //Old format
+			this.company = this.company.replace("Employee Management ","");
+			this.company = this.company.replace(" - Onboarding","");
+			this.company = this.company.replace(" Onboarding","");
+			
 		const title = words[1].split(' - ');
+			if (title.length == 1) {
+				this.date = title[0];
+				this.pickupLocation = "okänt";
+			}
+			else {
+				this.pickupLocation = title[0];
+				this.date = title[1];
+			}
+			this.typeAndName = words[2]; 
+		}
+
+		
 		this.ticketId = ticket.id;
-		this.company = words[0];
-		this.pickupLocation = title[0];
-		this.date = title[1];
-		this.typeAndName = words[2];
+		
 		this.statusText = statusList[ticket.status].text;
 		this.statusColour = statusList[ticket.status].colour;
 		this.due_by = ticket.due_by;
