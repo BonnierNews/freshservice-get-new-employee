@@ -222,5 +222,5 @@ const statusList = [
 	{ text: 'Pending', 	colour: '#f1fa8c55' },
 	{ text: 'Resolved', colour: '#50fa7b55' },
 	{ text: 'Resolved', colour: '#50fa7b55' },
-	{ text: 'Hold', 	colour: '#f1fa8c55' }
+	{ text: 'On Hold', 	colour: '#f1fa8c55' }
 ];
