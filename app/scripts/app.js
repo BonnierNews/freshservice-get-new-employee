@@ -31,22 +31,22 @@ async function getEmployeeList() {
 		document.getElementById('employeeTable').innerHTML = `
 		<div id="tableHeader" class="row">
 			<div class="cell">
-				Ärendenummer
+				Ticket number
 			</div>
 			<div class="cell">
-				Bolag
+				Company
 			</div>
 			<div class="cell">
-				Upphämtningsställe
+				Pickup location
 			</div>
 			<div class="cell">
-				Datum
+				Date
 			</div>
 			<div class="cell">
-				Anställningstyp & Namn
+				Employment type & Name
 			</div>
 			<div class="cell">
-				Status
+				State
 			</div>
 		</div>`;
 
