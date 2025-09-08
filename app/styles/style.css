@@ -7,7 +7,8 @@ main {
     padding: 5px;
 }
 
-#employeeTable {
+#employeeTable,
+#employeeTableFuture {
     padding: 10px;
     width: 100%;
     font-size: small;
