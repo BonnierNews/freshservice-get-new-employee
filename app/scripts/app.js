@@ -55,9 +55,72 @@ async function getEmployeeList() {
 
 		const tickets = new Tickets();
 		await tickets.getTickets(agent);
-		await tickets.getTickets(agent, true)
+		console.log("Found "+ tickets.tickets.length +" tickets for current week")
 		tickets.viewTickets();
 
+		document.getElementById('employeeTableFuture').innerHTML = `
+		<div id="tableHeader" class="row">
+			<div class="cell">
+				Ticket number
+			</div>
+			<div class="cell">
+				Company
+			</div>
+			<div class="cell">
+				Pickup location
+			</div>
+			<div class="cell">
+				Date
+			</div>
+			<div class="cell">
+				Employment type & Name
+			</div>
+			<div class="cell">
+				State
+			</div>
+		</div>`;
+		const ticketsFuture = new Tickets();
+		await ticketsFuture.getTickets(agent, true);
+		console.log("Found "+ ticketsFuture.tickets.length +" tickets for next week")
+		ticketsFuture.viewTickets(true);
+
+
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+async function updateList(page) {
+	try {
+		document.getElementById('employeeTable').innerHTML = `
+		<div id="tableHeader" class="row">
+			<div class="cell">
+				Ticket number
+			</div>
+			<div class="cell">
+				Company
+			</div>
+			<div class="cell">
+				Pickup location
+			</div>
+			<div class="cell">
+				Date
+			</div>
+			<div class="cell">
+				Employment type & Name
+			</div>
+			<div class="cell">
+				State
+			</div>
+		</div>`;
+
+		const agent = new Agent();
+		await agent.getAgent();
+
+		const tickets = new Tickets();
+		await tickets.getTickets(agent, false, page);
+		console.log("Found " + tickets.tickets.length + " tickets for current week. Page" + page)
+		tickets.viewTickets();
 	} catch (error) {
 		console.log(error);
 	}
@@ -104,6 +167,17 @@ function handleErr(err = 'None') {
 	console.error(`Error occured. Details:`, err);
 }
 
+function renderPagination(pages){
+	const paginationElement = document.getElementsByClassName('pagination')[0];
+	console.log(paginationElement);
+	paginationElement.innerHTML = ''
+	for (let page = 1; page <= pages; page++) {
+		paginationElement.innerHTML += `
+		<button onclick="updateList(${page})" class="${page}">${page}</a>
+	`
+	}
+}
+
 class Agent {
 	constructor() {
 		this.name = "";
@@ -137,8 +211,8 @@ class Ticket {
 			this.company = this.company.replace("Employee Management ", "");
 			this.company = this.company.replace(" - Onboarding", "");
 			this.company = this.company.replace(" Onboarding", "");
-			
-		const title = words[1].split(' - ');
+
+			const title = words[1].split(' - ');
 			if (title.length === 1) {
 				this.date = title[0];
 				this.pickupLocation = "okänt";
@@ -146,7 +220,7 @@ class Ticket {
 				this.pickupLocation = title[0];
 				this.date = title[1];
 			}
-			this.typeAndName = words[2]; 
+			this.typeAndName = words[2];
 		}
 
 		
@@ -156,8 +230,10 @@ class Ticket {
 		this.statusColour = statusList[ticket.status].colour;
 		this.due_by = ticket.due_by;
 	}
-	setRow() {
-		document.getElementById('employeeTable').innerHTML += `
+	setRow(future = false) {
+		const id = 'employeeTable'+(future?'Future':'');
+		console.log(id);
+		document.getElementById(id).innerHTML += `
 		<a class="row linkRow" target="_blank" href="https://bonniernews.freshservice.com/a/tickets/${this.ticketId}">
 			<div class="cell isFirstColumn">
 				#SR-${this.ticketId}
@@ -187,9 +263,11 @@ class Tickets {
 		this.totalTickets = 0;
 	}
 	async getTickets(agent, future = false, page = 1) {
+		
 		const toDate = new CustomDate();
 		toDate.fetchSelector("end");
 		toDate.addDays(future ? 7 : 0);
+
 		const fromDate = new CustomDate();
 		fromDate.fetchSelector("start");
 		fromDate.addDays(future ? 7 : 0);
@@ -212,25 +290,36 @@ class Tickets {
 			if (!future) {
 				this.tickets.push(tempTicket);
 			}
-			else if (future && !tempTicket.pickupLocation.includes(agent.shortAddress) && !this.tickets.find((ticket) => ticket.ticketId === tempTicket.ticketId)) {
+			else if (future && !tempTicket.pickupLocation.includes(agent.shortAddress)) {
 				this.tickets.push(tempTicket);
 			}
 			else this.totalTickets--;
 		});
 		this.tickets.sort(sortByDate);
-	}
-	viewTickets() {
-		//Handle pagination
-		if (this.totalTickets > this.tickets.length) {
-			document.getElementById('employeeTable').innerHTML = '<h3>Too many tickets in timespan, please narrow down your search.</h3>';
-			//get next page either by making a next page button or getting everything (bad idea)
+		if (this.totalTickets > this.tickets.length && !future) {
+			console.log("There are "+this.totalTickets+" total tickets. There are " + this.tickets.length + " tickets in current request return");
+			const pages = Math.ceil(this.totalTickets / 30);
+			console.log(pages + " pages");
+			renderPagination(pages);
 		}
-		//Handle empty response
-		else if (this.tickets.length === 0) {
-			document.getElementById('employeeTable').innerHTML = '<h3>No tickets found in selected timerange! 🎉</h3>';
+		try {
+			document.getElementsByClassName(page)[0].classList.add('active');
+		} catch (error) {}
+	}
+	viewTickets(future = false) {
+		const id = 'employeeTable'+(future?'Future':'');
+		//Handle pagination
+		// if (this.totalTickets > this.tickets.length) {
+		// 	document.getElementById(id).innerHTML = '<h3>Too many tickets in timespan, please narrow down your search.</h3>';
+		// 	//get next page either by making a next page button or getting everything (bad idea) NEEDS FIXING!!! HELL CURRENTLY
+		// }
+		// //Handle empty response
+		// else 
+		if (this.tickets.length === 0) {
+			document.getElementById(id).innerHTML = '<h3>No tickets found in selected timerange! 🎉</h3>';
 		}
 		else this.tickets.forEach(ticket => {
-			ticket.setRow();
+			ticket.setRow(future);
 		});
 	}
 }
