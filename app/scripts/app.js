@@ -1,15 +1,15 @@
 let client;
-app.initialized().then(
-	function (client) {
-		//If successful, register the app activated and deactivated method callback.
-		client.events.on("app.activated", onAppActivated(client));
-		//client.events.on("app.deactivated", onAppDeactivated);
-	},
-	function (error) {
-		//If unsuccessful
-		handleErr(error);
-	}
-);
+(async function() {
+    try {
+        client = await app.initialized();
+        client.events.on("app.activated", function() {
+            onAppActivated(client);
+        });
+
+    } catch (error) {
+        handleErr(error);
+    }
+})();
 
 function onAppActivated(_client) {
 	client = _client;

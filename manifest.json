@@ -1,7 +1,7 @@
 {
-  "platform-version": "2.3",
-  "product": {
-    "freshservice": {
+  "platform-version": "3.0",
+  "modules": {
+    "common": {
       "location": {
         "full_page_app": {
           "url": "index.html",
@@ -11,10 +11,11 @@
       "requests": {
         "requestNewEmployeeList": {}
       }
-    }
+    },
+    "service_ticket": {}
   },
   "engines": {
     "node": "18.20.8",
-    "fdk": "9.5.2"
+    "fdk": "9.7.1"
   }
 }
