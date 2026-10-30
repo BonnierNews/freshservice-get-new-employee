@@ -15,7 +15,10 @@
     "service_ticket": {}
   },
   "engines": {
-    "node": "18.20.8",
-    "fdk": "9.7.1"
+    "node": "24.22.2",
+    "fdk": "10.1.10"
+  },
+  "scripts": {
+    "fdk-unit-test": "vitest run --coverage"
   }
 }
