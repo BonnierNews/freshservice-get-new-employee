@@ -304,7 +304,7 @@ class Tickets {
 		}
 		try {
 			document.getElementsByClassName(page)[0].classList.add('active');
-		} catch (error) {}
+		} catch {}
 	}
 	viewTickets(future = false) {
 		const id = 'employeeTable'+(future?'Future':'');
@@ -333,3 +333,7 @@ const statusList = [
 	{ text: 'Resolved', colour: '#50fa7b55' },
 	{ text: 'On Hold', 	colour: '#f1fa8c55' }
 ];
+
+// Called from onclick attributes in index.html
+window.getEmployeeList = getEmployeeList;
+window.updateList = updateList;
